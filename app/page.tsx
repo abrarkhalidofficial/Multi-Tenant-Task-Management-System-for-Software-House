@@ -1,26 +1,23 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Users, FolderOpen, Clock, ArrowRight } from "lucide-react"
+import { CheckCircle, Users, Calendar, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-semibold text-gray-900">TaskFlow</span>
+          <div className="flex items-center space-x-2">
+            <CheckCircle className="h-8 w-8 text-blue-600" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">TaskFlow</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/login">
+          <div className="flex items-center space-x-4">
+            <Link href="/auth/signin">
               <Button variant="ghost">Sign In</Button>
             </Link>
-            <Link href="/register">
+            <Link href="/auth/signup">
               <Button>Get Started</Button>
             </Link>
           </div>
@@ -28,134 +25,113 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-4">
+      <main className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 text-balance">
             Multi-Tenant Task Management
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 text-balance">
-            Streamline Your Software House Operations
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 text-pretty max-w-2xl mx-auto">
-            Complete project management solution designed specifically for software houses. Manage multiple clients,
-            track progress, and collaborate seamlessly with role-based permissions.
+            <span className="text-blue-600 block">for Software Houses</span>
+          </h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto text-pretty">
+            Organize projects, assign tasks, and manage teams with clear role-based permissions. Built for software
+            development teams that need powerful project management.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto">
+            <Link href="/auth/signup">
+              <Button size="lg" className="text-lg px-8 py-3">
                 Start Free Trial
-                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
             <Link href="/demo">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-3 bg-transparent">
                 View Demo
               </Button>
             </Link>
           </div>
         </div>
-      </section>
 
-      {/* Features Grid */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Everything Your Software House Needs</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Built specifically for software development teams managing multiple client projects
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <Card className="border-0 shadow-lg">
             <CardHeader>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
+              <Users className="h-12 w-12 text-blue-600 mb-4" />
               <CardTitle>Multi-Tenant Architecture</CardTitle>
               <CardDescription>
-                Complete data isolation for each software house with custom branding and settings
+                Complete data isolation for each software house with tenant-specific settings and branding.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-0 shadow-lg">
             <CardHeader>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <FolderOpen className="w-6 h-6 text-green-600" />
-              </div>
-              <CardTitle>Project Management</CardTitle>
+              <CheckCircle className="h-12 w-12 text-green-600 mb-4" />
+              <CardTitle>Role-Based Permissions</CardTitle>
               <CardDescription>
-                Organize client projects with team assignments, deadlines, and progress tracking
+                Admin, Project Manager, Team Lead, Member, and Client roles with granular access control.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-0 shadow-lg">
             <CardHeader>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
-              </div>
-              <CardTitle>Task Tracking</CardTitle>
-              <CardDescription>Kanban boards, task assignments, comments, and real-time status updates</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader>
-              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-orange-600" />
-              </div>
-              <CardTitle>Role-Based Access</CardTitle>
+              <Calendar className="h-12 w-12 text-purple-600 mb-4" />
+              <CardTitle>Real-Time Collaboration</CardTitle>
               <CardDescription>
-                Admin, Project Manager, Team Lead, Member, and Client roles with granular permissions
+                Live updates, comments, @mentions, and notifications powered by Convex real-time sync.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-0 shadow-lg">
             <CardHeader>
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-red-600" />
-              </div>
-              <CardTitle>Team Collaboration</CardTitle>
+              <BarChart3 className="h-12 w-12 text-orange-600 mb-4" />
+              <CardTitle>Project Analytics</CardTitle>
               <CardDescription>
-                Comments, @mentions, file attachments, and activity logs for seamless teamwork
+                Track progress, completion rates, and team performance with comprehensive reports.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-0 shadow-lg">
             <CardHeader>
-              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-indigo-600" />
-              </div>
-              <CardTitle>Real-time Updates</CardTitle>
-              <CardDescription>Instant notifications and live sync across all team members and clients</CardDescription>
+              <CheckCircle className="h-12 w-12 text-indigo-600 mb-4" />
+              <CardTitle>Kanban Boards</CardTitle>
+              <CardDescription>
+                Visual task management with drag-and-drop functionality and multiple view options.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <Users className="h-12 w-12 text-red-600 mb-4" />
+              <CardTitle>Team Management</CardTitle>
+              <CardDescription>
+                Assign tasks, track workload, and manage team members across multiple projects.
+              </CardDescription>
             </CardHeader>
           </Card>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="bg-blue-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Workflow?</h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join software houses already using TaskFlow to deliver projects on time and exceed client expectations.
+        {/* CTA Section */}
+        <div className="text-center bg-white dark:bg-gray-800 rounded-2xl p-12 shadow-xl">
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Ready to streamline your project management?
+          </h3>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            Join software houses already using TaskFlow to deliver projects on time.
           </p>
-          <Link href="/register">
-            <Button size="lg" variant="secondary">
-              Start Your Free Trial
-              <ArrowRight className="w-4 h-4 ml-2" />
+          <Link href="/auth/signup">
+            <Button size="lg" className="text-lg px-12 py-4">
+              Get Started Today
             </Button>
           </Link>
         </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t py-8">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 TaskFlow. Built for software houses, by developers.</p>
+      <footer className="border-t bg-white dark:bg-gray-900 mt-16">
+        <div className="container mx-auto px-4 py-8 text-center text-gray-600 dark:text-gray-400">
+          <p>&copy; 2024 TaskFlow. Built with Next.js and Convex.</p>
         </div>
       </footer>
     </div>
