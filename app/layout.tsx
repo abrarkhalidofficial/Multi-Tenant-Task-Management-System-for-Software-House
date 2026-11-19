@@ -1,31 +1,25 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import { AuthProvider } from "@/lib/auth/auth-context"
-import { Suspense } from "react"
-import "./globals.css"
+"use client";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { AuthProvider } from "@/lib/auth/auth-context";
 
-export const metadata: Metadata = {
-  title: "TaskFlow - Multi-Tenant Task Management",
-  description: "Complete project management solution for software houses",
-  generator: "v0.app",
-}
+const inter = Inter({ subsets: ["latin"] });
+
+const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AuthProvider>{children}</AuthProvider>
-        </Suspense>
-        <Analytics />
+      <body className={inter.className}>
+        <AuthProvider>
+          <ConvexProvider client={convex}>{children}</ConvexProvider>
+        </AuthProvider>
       </body>
     </html>
-  )
+  );
 }

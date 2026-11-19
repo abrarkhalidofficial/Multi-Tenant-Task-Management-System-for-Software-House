@@ -1,64 +1,67 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { createContext, useContext, useEffect, useState } from "react"
-import type { User, Tenant } from "../types/database"
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { User, Tenant, Permission } from "../types/database";
+import { hasPermission as checkPermission } from "./permissions";
 
 interface AuthContextType {
-  user: User | null
-  tenant: Tenant | null
-  isLoading: boolean
-  login: (email: string, password: string) => Promise<void>
+  user: User | null;
+  tenant: Tenant | null;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
   register: (
     email: string,
     password: string,
     name: string,
-    tenantData?: { name: string; slug: string },
-  ) => Promise<void>
-  logout: () => void
-  hasPermission: (permission: string) => boolean
+    tenantData?: { name: string; slug: string }
+  ) => Promise<void>;
+  logout: () => void;
+  hasPermission: (permission: Permission) => boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [tenant, setTenant] = useState<Tenant | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [tenant, setTenant] = useState<Tenant | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check for existing session on mount
-    checkAuthStatus()
-  }, [])
+    checkAuthStatus();
+  }, []);
 
   const checkAuthStatus = async () => {
     try {
-      const token = localStorage.getItem("auth_token")
+      const token = localStorage.getItem("auth_token");
       if (!token) {
-        setIsLoading(false)
-        return
+        setIsLoading(false);
+        return;
       }
 
       // In a real app, validate token with backend
-      const userData = localStorage.getItem("user_data")
-      const tenantData = localStorage.getItem("tenant_data")
+      const userData = localStorage.getItem("user_data");
+      const tenantData = localStorage.getItem("tenant_data");
 
       if (userData && tenantData) {
-        setUser(JSON.parse(userData))
-        setTenant(JSON.parse(tenantData))
+        setUser(JSON.parse(userData));
+        setTenant(JSON.parse(tenantData));
       }
     } catch (error) {
-      console.error("Auth check failed:", error)
-      localStorage.removeItem("auth_token")
-      localStorage.removeItem("user_data")
-      localStorage.removeItem("tenant_data")
+      console.error("Auth check failed:", error);
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user_data");
+      localStorage.removeItem("tenant_data");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Mock login - in real app, call your auth API
       const mockUser: User = {
@@ -70,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      };
 
       const mockTenant: Tenant = {
         id: "tenant_1",
@@ -78,29 +81,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         slug: "acme",
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      };
 
       // Store auth data
-      localStorage.setItem("auth_token", "mock_token_123")
-      localStorage.setItem("user_data", JSON.stringify(mockUser))
-      localStorage.setItem("tenant_data", JSON.stringify(mockTenant))
+      localStorage.setItem("auth_token", "mock_token_123");
+      localStorage.setItem("user_data", JSON.stringify(mockUser));
+      localStorage.setItem("tenant_data", JSON.stringify(mockTenant));
 
-      setUser(mockUser)
-      setTenant(mockTenant)
+      setUser(mockUser);
+      setTenant(mockTenant);
     } catch (error) {
-      throw new Error("Login failed")
+      throw new Error("Login failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const register = async (
     email: string,
     password: string,
     name: string,
-    tenantData?: { name: string; slug: string },
+    tenantData?: { name: string; slug: string }
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Mock registration - in real app, call your auth API
       const mockTenant: Tenant = {
@@ -109,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         slug: tenantData?.slug || "new-house",
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      };
 
       const mockUser: User = {
         id: "user_new",
@@ -120,37 +123,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      };
 
       // Store auth data
-      localStorage.setItem("auth_token", "mock_token_new")
-      localStorage.setItem("user_data", JSON.stringify(mockUser))
-      localStorage.setItem("tenant_data", JSON.stringify(mockTenant))
+      localStorage.setItem("auth_token", "mock_token_new");
+      localStorage.setItem("user_data", JSON.stringify(mockUser));
+      localStorage.setItem("tenant_data", JSON.stringify(mockTenant));
 
-      setUser(mockUser)
-      setTenant(mockTenant)
+      setUser(mockUser);
+      setTenant(mockTenant);
     } catch (error) {
-      throw new Error("Registration failed")
+      throw new Error("Registration failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const logout = () => {
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("user_data")
-    localStorage.removeItem("tenant_data")
-    setUser(null)
-    setTenant(null)
-  }
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user_data");
+    localStorage.removeItem("tenant_data");
+    setUser(null);
+    setTenant(null);
+    router.push("/login");
+  };
 
-  const hasPermission = (permission: string): boolean => {
-    if (!user) return false
+  const hasPermission = (permission: Permission): boolean => {
+    if (!user) return false;
 
-    // Import permission checking logic
-    const { hasPermission: checkPermission } = require("./permissions")
-    return checkPermission(user.role, permission)
-  }
+    return checkPermission(user.role, permission);
+  };
 
   const value = {
     user,
@@ -160,15 +162,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     register,
     logout,
     hasPermission,
-  }
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
+  return context;
 }

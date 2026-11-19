@@ -1,0 +1,10 @@
+{
+  "auth": {
+    "applicationID": "task-manager-app"
+  },
+  "schema": "convex/schema.ts",
+  "source": "convex",
+  "output": "convex/_generated",
+  "node": "18",
+  "ts": "4.9.5"
+}
