@@ -6,7 +6,10 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy",
+    "postinstall": "convex dev --once"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -44,6 +47,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
+    "convex": "latest",
+    "@convex-dev/auth": "latest",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
     "geist": "latest",

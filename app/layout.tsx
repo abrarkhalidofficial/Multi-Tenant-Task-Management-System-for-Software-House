@@ -1,31 +1,20 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import { AuthProvider } from "@/lib/auth/auth-context"
-import { Suspense } from "react"
-import "./globals.css"
+import type React from "react";
 
-export const metadata: Metadata = {
-  title: "TaskFlow - Multi-Tenant Task Management",
-  description: "Complete project management solution for software houses",
-  generator: "v0.app",
-}
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
+import { Providers } from "@/components/providers";
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AuthProvider>{children}</AuthProvider>
-        </Suspense>
+      <body>
+        <Providers>{children}</Providers>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

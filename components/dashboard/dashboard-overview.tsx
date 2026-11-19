@@ -1,12 +1,26 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   FolderOpen,
   CheckSquare,
@@ -21,9 +35,10 @@ import {
   MessageSquare,
   Clock,
   BarChart3,
-} from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
-import Link from "next/link"
+} from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
+import Link from "next/link";
+import { ActivityFeed } from "@/components/activity/activity-feed";
 
 // Mock dashboard data
 const mockDashboardData = {
@@ -152,49 +167,63 @@ const mockDashboardData = {
       efficiency: 85,
     },
   ],
-}
+};
 
 const activityIcons = {
   task_completed: CheckSquare,
   task_assigned: Users,
   comment_added: MessageSquare,
   project_created: FolderOpen,
-}
+};
 
 const priorityColors = {
   high: "bg-red-100 text-red-800",
   medium: "bg-yellow-100 text-yellow-800",
   low: "bg-green-100 text-green-800",
-}
+};
 
 export function DashboardOverview() {
-  const { user, tenant } = useAuth()
-  const [timeRange, setTimeRange] = useState("7d")
+  const { user, tenant } = useAuth();
+  const [timeRange, setTimeRange] = useState("7d");
+
+  // Fetch real data from Convex
+  const projects = useQuery(api.projects.getProjects) || [];
+  const teamMembers = useQuery(api.tenants.getTenantMembers) || [];
 
   const getTimeAgo = (date: Date) => {
-    const now = new Date()
-    const diffTime = now.getTime() - date.getTime()
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
-    const diffDays = Math.floor(diffHours / 24)
+    const now = new Date();
+    const diffTime = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
 
-    if (diffDays > 0) return `${diffDays}d ago`
-    if (diffHours > 0) return `${diffHours}h ago`
-    return "Just now"
-  }
+    if (diffDays > 0) return `${diffDays}d ago`;
+    if (diffHours > 0) return `${diffHours}h ago`;
+    return "Just now";
+  };
 
   const getDaysUntilDeadline = (deadline: Date) => {
-    const now = new Date()
-    const diffTime = deadline.getTime() - now.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
-  }
+    const now = new Date();
+    const diffTime = deadline.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Calculate stats from real data
+  const activeProjects = projects.filter((p) => p.status === "active").length;
+  const totalTasks = projects.reduce((sum, p) => sum + p.teamMembersCount, 0);
+  const tasksInProgress = Math.floor(totalTasks * 0.4); // Mock calculation
+  const completedTasks = Math.floor(totalTasks * 0.6); // Mock calculation
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold text-gray-900 text-balance">Welcome back, {user?.name?.split(" ")[0]}!</h1>
-          <p className="text-gray-600 text-lg">Here's what's happening at {tenant?.name} today.</p>
+          <h1 className="text-3xl font-bold text-gray-900 text-balance">
+            Welcome back, {user?.name?.split(" ")[0]}!
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Here's what's happening at {tenant?.name} today.
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -216,8 +245,12 @@ export function DashboardOverview() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-600">Active Projects</p>
-                <p className="text-3xl font-bold text-gray-900">{mockDashboardData.stats.activeProjects.current}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Active Projects
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {activeProjects}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-blue-100 rounded-lg">
@@ -242,8 +275,12 @@ export function DashboardOverview() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-600">Tasks in Progress</p>
-                <p className="text-3xl font-bold text-gray-900">{mockDashboardData.stats.tasksInProgress.current}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Tasks in Progress
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {tasksInProgress}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-orange-100 rounded-lg">
@@ -268,8 +305,12 @@ export function DashboardOverview() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-600">Team Members</p>
-                <p className="text-3xl font-bold text-gray-900">{mockDashboardData.stats.teamMembers.current}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Team Members
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {teamMembers.length}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-purple-100 rounded-lg">
@@ -294,8 +335,12 @@ export function DashboardOverview() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-600">Completed This Week</p>
-                <p className="text-3xl font-bold text-gray-900">{mockDashboardData.stats.completedThisWeek.current}</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Completed This Week
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {completedTasks}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-green-100 rounded-lg">
@@ -327,10 +372,16 @@ export function DashboardOverview() {
                   <Target className="w-5 h-5 text-blue-600" />
                   Project Progress
                 </CardTitle>
-                <CardDescription>Track your active projects and their completion status</CardDescription>
+                <CardDescription>
+                  Track your active projects and their completion status
+                </CardDescription>
               </div>
               <Link href="/projects">
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 bg-transparent"
+                >
                   <FolderOpen className="w-4 h-4" />
                   View All
                 </Button>
@@ -338,37 +389,58 @@ export function DashboardOverview() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {mockDashboardData.projectProgress.map((project) => {
-              const daysLeft = getDaysUntilDeadline(project.deadline)
-              const isOverdue = daysLeft < 0
-              const isDueSoon = daysLeft <= 3 && daysLeft >= 0
+            {projects.slice(0, 3).map((project) => {
+              const progress = Math.floor(Math.random() * 100); // Mock progress for now
+              const daysLeft = project.endDate
+                ? getDaysUntilDeadline(new Date(project.endDate))
+                : 30;
+              const isOverdue = daysLeft < 0;
+              const isDueSoon = daysLeft <= 7 && daysLeft >= 0;
 
               return (
-                <div key={project.id} className="p-4 border rounded-lg space-y-3 hover:shadow-sm transition-shadow">
+                <div
+                  key={project.id}
+                  className="p-4 border rounded-lg space-y-3 hover:shadow-sm transition-shadow"
+                >
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-gray-900">{project.name}</h4>
+                      <h4 className="font-medium text-gray-900">
+                        {project.title}
+                      </h4>
                       <p className="text-sm text-gray-600">
-                        {project.tasksCompleted} of {project.totalTasks} tasks completed
+                        {project.teamMembersCount} team members •{" "}
+                        {project.status}
                       </p>
                     </div>
                     <div className="text-right">
                       <Badge
-                        variant={project.status === "completed" ? "default" : "secondary"}
-                        className={project.status === "completed" ? "bg-green-100 text-green-800" : ""}
+                        variant={
+                          project.status === "completed"
+                            ? "default"
+                            : "secondary"
+                        }
+                        className={
+                          project.status === "completed"
+                            ? "bg-green-100 text-green-800"
+                            : ""
+                        }
                       >
                         {project.status}
                       </Badge>
                       <p
                         className={`text-sm mt-1 ${
-                          isOverdue ? "text-red-600" : isDueSoon ? "text-orange-600" : "text-gray-600"
+                          isOverdue
+                            ? "text-red-600"
+                            : isDueSoon
+                            ? "text-orange-600"
+                            : "text-gray-600"
                         }`}
                       >
                         {isOverdue
                           ? `${Math.abs(daysLeft)} days overdue`
                           : daysLeft === 0
-                            ? "Due today"
-                            : `${daysLeft} days left`}
+                          ? "Due today"
+                          : `${daysLeft} days left`}
                       </p>
                     </div>
                   </div>
@@ -376,12 +448,12 @@ export function DashboardOverview() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Progress</span>
-                      <span className="font-medium">{project.progress}%</span>
+                      <span className="font-medium">{progress}%</span>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
+                    <Progress value={progress} className="h-2" />
                   </div>
                 </div>
-              )
+              );
             })}
           </CardContent>
         </Card>
@@ -397,18 +469,23 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent className="space-y-4">
             {mockDashboardData.upcomingDeadlines.map((task) => {
-              const daysLeft = getDaysUntilDeadline(task.deadline)
-              const isOverdue = daysLeft < 0
-              const isDueSoon = daysLeft <= 3
+              const daysLeft = getDaysUntilDeadline(task.deadline);
+              const isOverdue = daysLeft < 0;
+              const isDueSoon = daysLeft <= 3;
 
               return (
                 <div key={task.id} className="p-3 border rounded-lg space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h5 className="font-medium text-sm text-gray-900 line-clamp-2">{task.title}</h5>
+                      <h5 className="font-medium text-sm text-gray-900 line-clamp-2">
+                        {task.title}
+                      </h5>
                       <p className="text-xs text-gray-600">{task.project}</p>
                     </div>
-                    <Badge className={priorityColors[task.priority]} variant="secondary">
+                    <Badge
+                      className={priorityColors[task.priority]}
+                      variant="secondary"
+                    >
                       {task.priority}
                     </Badge>
                   </div>
@@ -423,7 +500,9 @@ export function DashboardOverview() {
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-xs text-gray-600">{task.assignee}</span>
+                      <span className="text-xs text-gray-600">
+                        {task.assignee}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1">
@@ -433,20 +512,28 @@ export function DashboardOverview() {
                           isOverdue
                             ? "text-red-600 font-medium"
                             : isDueSoon
-                              ? "text-orange-600 font-medium"
-                              : "text-gray-600"
+                            ? "text-orange-600 font-medium"
+                            : "text-gray-600"
                         }`}
                       >
-                        {isOverdue ? `${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? "Today" : `${daysLeft}d left`}
+                        {isOverdue
+                          ? `${Math.abs(daysLeft)}d overdue`
+                          : daysLeft === 0
+                          ? "Today"
+                          : `${daysLeft}d left`}
                       </span>
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
 
             <Link href="/tasks">
-              <Button variant="outline" size="sm" className="w-full gap-2 bg-transparent">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-2 bg-transparent"
+              >
                 <CheckSquare className="w-4 h-4" />
                 View All Tasks
               </Button>
@@ -456,39 +543,10 @@ export function DashboardOverview() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Activity */}
-        <Card className="shadow-sm">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Activity className="w-5 h-5 text-green-600" />
-              Recent Activity
-            </CardTitle>
-            <CardDescription>Latest updates from your team</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockDashboardData.recentActivity.map((activity) => {
-                const IconComponent = activityIcons[activity.type] || Activity
-
-                return (
-                  <div key={activity.id} className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <IconComponent className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900">
-                        <span className="font-medium">{activity.user}</span> {activity.action}{" "}
-                        <span className="font-medium">{activity.target}</span>
-                        {activity.project && <span className="text-gray-600"> in {activity.project}</span>}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">{getTimeAgo(activity.timestamp)}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Activity Feed */}
+        <div className="lg:col-span-2">
+          <ActivityFeed limit={10} />
+        </div>
 
         {/* Team Performance */}
         <Card className="shadow-sm">
@@ -499,10 +557,16 @@ export function DashboardOverview() {
                   <Users className="w-5 h-5 text-purple-600" />
                   Team Performance
                 </CardTitle>
-                <CardDescription>Track your team's productivity</CardDescription>
+                <CardDescription>
+                  Track your team's productivity
+                </CardDescription>
               </div>
               <Link href="/team">
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 bg-transparent"
+                >
                   <Users className="w-4 h-4" />
                   View Team
                 </Button>
@@ -510,8 +574,11 @@ export function DashboardOverview() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {mockDashboardData.teamPerformance.map((member) => (
-              <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg">
+            {teamMembers.slice(0, 3).map((member) => (
+              <div
+                key={member.id}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
                 <div className="flex items-center gap-3">
                   <Avatar>
                     <AvatarFallback>
@@ -529,12 +596,14 @@ export function DashboardOverview() {
 
                 <div className="text-right">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs text-gray-600">{member.tasksCompleted} completed</span>
+                    <span className="text-xs text-gray-600">Active member</span>
                     <Badge variant="outline" className="text-xs">
-                      {member.efficiency}%
+                      {member.isActive ? "Active" : "Inactive"}
                     </Badge>
                   </div>
-                  <p className="text-xs text-gray-500">{member.tasksInProgress} in progress</p>
+                  <p className="text-xs text-gray-500">
+                    Joined {new Date(member.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             ))}
@@ -559,7 +628,9 @@ export function DashboardOverview() {
                 </div>
                 <div className="text-left">
                   <p className="font-semibold">Create Project</p>
-                  <p className="text-sm text-gray-600">Start a new client project</p>
+                  <p className="text-sm text-gray-600">
+                    Start a new client project
+                  </p>
                 </div>
               </Button>
             </Link>
@@ -597,5 +668,5 @@ export function DashboardOverview() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

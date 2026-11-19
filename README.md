@@ -1,119 +1,196 @@
 # Multi-Tenant Task Management System
 
-A **multi-tenant task management system** designed for software houses to manage projects, assign and track tasks, and collaborate with teams.  
-Built with **Next.js (App Router + React Server Components)** for the frontend and **Convex** for backend, database, authentication, and real-time sync.
+A comprehensive task management system built with Next.js, Convex, and shadcn-ui for software houses.
 
----
+## Features
 
-## 🚀 Features
+- **Multi-Tenant Architecture**: Isolated workspaces with tenant-specific settings
+- **Role-Based Access Control**: Admin, Project Manager, Team Lead, Member, Client roles
+- **Project & Task Management**: Full CRUD operations with subtasks and dependencies
+- **Real-time Collaboration**: Live updates using Convex
+- **File Attachments**: Secure file storage with Convex
+- **Comments & @Mentions**: Rich commenting system
+- **Kanban/List/Calendar Views**: Multiple task visualization options
+- **Notifications**: In-app notifications and activity feeds
+- **Analytics & Reports**: Comprehensive reporting and analytics
+- **Responsive Design**: Mobile-first design with shadcn-ui
 
-### 🔑 Multi-Tenancy
+## Tech Stack
 
-- Each software house = one tenant workspace.
-- Data fully isolated per tenant.
-- Custom tenant branding (name, logo, theme).
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Backend**: Convex (Database, Auth, Real-time, File Storage)
+- **UI**: shadcn-ui, Tailwind CSS
+- **Deployment**: Vercel (Frontend), Convex Cloud (Backend)
 
-### 👥 Authentication & Roles
-
-- Secure authentication with Convex Auth (email/password, OAuth optional).
-- Role-based permissions:
-  - **Admin** – manage tenant, users, roles, and all projects.
-  - **Project Manager** – create/manage projects, assign tasks, track progress.
-  - **Team Lead** – manage tasks within assigned projects, review updates.
-  - **Member** – view/update assigned tasks, comment, log work.
-  - **Client (optional)** – read-only access to assigned projects.
-
-### 📂 Project Management
-
-- Create, update, archive projects.
-- Assign project managers and teams.
-- Metadata: title, description, deadlines, status.
-
-### ✅ Task Management
-
-- Tasks with: title, description, priority, deadline, status, assignee(s).
-- Subtasks and checklists.
-- File attachments (Convex storage or optional S3).
-- Task lifecycle: **To Do → In Progress → Review → Done**.
-- Commenting with `@mentions`.
-
-### 📊 Views & Filters
-
-- **Kanban board** view.
-- **List view**.
-- **Calendar view** (deadlines).
-- Filters: by assignee, priority, status, project.
-
-### 🔔 Notifications & Activity
-
-- Real-time in-app notifications.
-- Activity logs per project/task.
-
-### 📈 Lightweight Reports
-
-- Project progress overview.
-- Task completion rate by team/member.
-
----
-
-## ⚙️ Tech Stack
-
-- **Frontend**: Next.js (App Router, RSC, Tailwind CSS).
-- **Backend/DB**: Convex (data, auth, real-time sync).
-- **File Storage**: Convex storage (or S3 fallback).
-- **Deployment**: Vercel (frontend) + Convex cloud.
-
----
-
-## 🔒 Non-Functional Requirements
-
-- **Scalable**: Powered by Convex serverless backend.
-- **Secure**: Strong tenant-based data isolation.
-- **Fast**: Real-time task updates under 200ms.
-- **Reliable**: Auto-sync across clients with Convex.
-- **Maintainable**: Clean modular Next.js components.
-
----
-
-## 📌 Roles & Permissions
-
-| Role                | Permissions                                          |
-| ------------------- | ---------------------------------------------------- |
-| **Admin**           | Manage tenant users, roles, all projects and tasks.  |
-| **Project Manager** | Create/manage projects, assign tasks, track reports. |
-| **Team Lead**       | Manage tasks in assigned projects, review updates.   |
-| **Member**          | View/update assigned tasks, comment, log work.       |
-| **Client** (opt)    | Read-only view of assigned projects.                 |
-
----
-
-## 🔮 Future Enhancements
-
-- Subscription plans (per tenant).
-- AI task suggestions (auto-prioritization).
-- Time tracking per task.
-- Advanced dashboards with analytics.
-
----
-
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- Yarn / npm
-- Convex account ([https://convex.dev](https://convex.dev))
-- Vercel account (for deployment)
+- pnpm
+- Convex CLI
 
 ### Installation
 
+1. Clone the repository:
+
 ```bash
-# Clone repo
-git clone https://github.com/abrarkhalidofficial/Multi-Tenant-Task-Management-System-for-Software-House.git
-
-# Navigate to project
-cd Multi-Tenant-Task-Management-System-for-Software-House
-
-# Install dependencies
-npm install   # or yarn install
+git clone <repository-url>
+cd multi-tenant-task-management-system
 ```
+
+2. Install dependencies:
+
+```bash
+pnpm install
+```
+
+3. Set up Convex:
+
+```bash
+pnpm convex:dev
+```
+
+This will:
+
+- Initialize Convex in your project
+- Set up authentication
+- Generate the database schema
+- Start the development server
+
+4. Start the Next.js development server:
+
+```bash
+pnpm run dev
+```
+
+The app will be available at `http://localhost:3000`
+
+## Project Structure
+
+```
+├── app/                    # Next.js App Router pages
+│   ├── analytics/         # Analytics page
+│   ├── dashboard/         # Dashboard page
+│   ├── projects/          # Project management
+│   ├── tasks/            # Task management
+│   └── ...
+├── components/            # React components
+│   ├── analytics/        # Analytics components
+│   ├── auth/             # Authentication components
+│   ├── dashboard/        # Dashboard components
+│   ├── layout/           # Layout components
+│   ├── notifications/    # Notification components
+│   ├── tasks/            # Task components
+│   └── ui/               # shadcn-ui components
+├── convex/               # Convex backend
+│   ├── auth.ts           # Authentication logic
+│   ├── middleware.ts     # Authorization middleware
+│   ├── permissions.ts    # Permission definitions
+│   ├── projects.ts       # Project operations
+│   ├── tasks.ts          # Task operations
+│   ├── tenants.ts        # Tenant management
+│   └── schema.ts         # Database schema
+└── lib/                  # Utility libraries
+    ├── auth/             # Authentication context
+    ├── types/            # TypeScript types
+    └── utils/            # Helper functions
+```
+
+## Database Schema
+
+The system uses a comprehensive database schema with the following main tables:
+
+- **tenants**: Multi-tenant isolation
+- **users**: User management with roles
+- **projects**: Project information and settings
+- **tasks**: Task management with subtasks
+- **taskComments**: Comments with @mentions
+- **notifications**: In-app notifications
+- **activityLogs**: Audit trail
+- **files**: File attachments
+- **timeEntries**: Time tracking
+- **reports**: Saved reports
+
+## Authentication & Authorization
+
+- **Authentication**: Convex Auth with support for multiple providers
+- **Authorization**: Role-based access control with granular permissions
+- **Tenant Isolation**: Data isolation between tenants
+
+## Deployment
+
+### Frontend (Vercel)
+
+1. Connect your GitHub repository to Vercel
+2. Set environment variables:
+   - `CONVEX_URL`: Your Convex deployment URL
+   - `NEXT_PUBLIC_CONVEX_URL`: Your Convex deployment URL
+3. Deploy automatically on push
+
+### Backend (Convex)
+
+1. Deploy to Convex Cloud:
+
+```bash
+pnpm convex:deploy
+```
+
+2. Set up authentication providers in Convex dashboard
+3. Configure file storage settings
+
+## Development Commands
+
+```bash
+# Start development servers
+pnpm run dev              # Next.js dev server
+pnpm convex:dev          # Convex dev server
+
+# Build for production
+pnpm run build           # Build Next.js app
+pnpm convex:deploy       # Deploy Convex functions
+
+# Code quality
+pnpm run lint            # Run ESLint
+```
+
+## Environment Variables
+
+Create a `.env.local` file with:
+
+```env
+# Convex
+CONVEX_URL=your-convex-url
+NEXT_PUBLIC_CONVEX_URL=your-convex-url
+
+# Optional: Authentication providers
+AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_CLIENT_SECRET=your-auth0-client-secret
+```
+
+## Performance
+
+- **Real-time Updates**: <200ms response times
+- **Optimized Queries**: Efficient database indexing
+- **Lazy Loading**: Components load on demand
+- **Caching**: Convex provides automatic caching
+
+## Security
+
+- **Data Isolation**: Tenant-specific data separation
+- **Authentication**: Secure authentication with Convex
+- **Authorization**: Granular permission system
+- **File Security**: Secure file upload and access
+- **Audit Trail**: Complete activity logging
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
