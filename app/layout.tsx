@@ -1,31 +1,35 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import { AuthProvider } from "@/lib/auth/auth-context"
-import { Suspense } from "react"
-import "./globals.css"
+import type React from "react";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import ClientLayout from "./client-layout";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ConvexProvider } from "./convex-provider";
 
-export const metadata: Metadata = {
-  title: "TaskFlow - Multi-Tenant Task Management",
-  description: "Complete project management solution for software houses",
-  generator: "v0.app",
-}
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AuthProvider>{children}</AuthProvider>
-        </Suspense>
-        <Analytics />
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ConvexProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ClientLayout>{children}</ClientLayout>
+          </ThemeProvider>
+        </ConvexProvider>
       </body>
     </html>
-  )
+  );
 }
+
+export const metadata = {
+  generator: "v0.app",
+};
